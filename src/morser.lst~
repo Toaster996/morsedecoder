@@ -37,7 +37,7 @@ morser                                                                          
                         34             MOV R0, A
                         35             ORL A, R7
                         36             MOV R7, A
-                        37             SETB R0.1
+                        37             setb R0.1
 ****ERROR:Givenregisterdoesnotbelongtothebitaddressablearea:R0.1
 ****ERROR:Symbolnotdefined:r0
                         38             RET
@@ -48,7 +48,7 @@ morser                                                                          
                         43             ORL A, R7
                         44             ORL A, R7
                         45             MOV R7, A
-                        46             SETB R0.1
+                        46             setb R0.1
 ****ERROR:Givenregisterdoesnotbelongtothebitaddressablearea:R0.1
 ****ERROR:Symbolnotdefined:r0
                         47             RET
