@@ -3,74 +3,55 @@ morser                                                                          
   0080                   2     BUTTON EQU P0.0
                          3
                          4     cseg at 0h
-                         5     jmp INIT
+0000 020010              5     jmp INIT
                          6
                          7     ; Wait for first user input
                          8     org 10h
                          9     INIT:
-                        10             JB BUTTON, INIT
-                        11             JMP START_TIMER
+0010 75A882             10             MOV IE, #10000010b
+0013 020016             11             JMP BTN_LOOP
                         12
-                        13     MAIN:
-                        14             MOV R0, A
-                        15             CJNE A, #00010000b, FINISH_CHAR
-                        16     LOOP_POINT: ;Endless loop. Place refresh logic here
-                        17             JNB R0.1, LOOP_POINT
-****ERROR:Givenregisterdoesnotbelongtothebitaddressablearea:R0.1
-****ERROR:Symbolnotdefined:r0
-                        18             MOV R0, A
-                        19             RL A
-                        20             MOV A, R0
-                        21             JMP MAIN
+                        13      BTN_LOOP:;!pressed
+0016 C28C               14             clr tr0
+                        15             ;if(R1==1){
+                        16             ; set R7 for long press}
+                        17             ;else for shortpress
+                        18
+                        19             ;Run timer to detect break
+0018 308008             20             JNB BUTTON, START_TIMER
+001B 80F9               21             JMP BTN_LOOP
                         22
-                        23     FINISH_CHAR:
-                        24             MOV A, A
-                        25
-                        26     START_TIMER:
-                        27             mov tl0, #0c0h ; working #0C0h
-                        28             mov th0, #0c0h ; working #0C0h
-                        29             setb tr0 ; startet timer
-                        30             jmp loop_point
-                        31
-                        32     TIMER_INTERRUPT:
-                        33             JNB BUTTON, LONG_PRESS
-                        34             MOV R0, A
-                        35             ORL A, R7
-                        36             MOV R7, A
-                        37             SETB R0.1
-****ERROR:Givenregisterdoesnotbelongtothebitaddressablearea:R0.1
-****ERROR:Symbolnotdefined:r0
-                        38             RET
-                        39
-                        40     LONG_PRESS:
-                        41             MOV R0, A
-                        42             RL A
-                        43             ORL A, R7
-                        44             ORL A, R7
-                        45             MOV R7, A
-                        46             SETB R0.1
-****ERROR:Givenregisterdoesnotbelongtothebitaddressablearea:R0.1
-****ERROR:Symbolnotdefined:r0
-                        47             RET
-                        48
-                        49
-                        50     org 0bh ; adresse von timer interrupt
+                        23      PRESSED:
+001D 3080FD             24             JNB BUTTON, pressed
+0020 2080F3             25             JB BUTTON, BTN_LOOP
+                        26
+                        27
+                        28     START_TIMER:
+0023 758902             29             mov TMOD, #00000010b
+0026 758B00             30             mov tl1, #000h ; working #0C0h
+0029 758D00             31             mov th1, #000h ; working #0C0h
+002C 758A00             32             mov tl0, #000h ; working #0C0h
+002F 758C00             33             mov th0, #000h ; working #0C0h
+0032 D28C               34             setb tr0 ; startet timer
+0034 80E7               35             JMP PRESSED
+                        36
+                        37
+                        38     LONG_PRESS_DETECED:
+0036 7901               39             mov r1,#1 ;save long press at R1
+0038 C28C               40             clr tr0 ;stop timer
+003A 22                 41             RET
+                        42
+                        43     org 0bh ; adresse v on timer interrupt
 ****WARNING:ThisORGhaslowervaluethanthepreviousone
-                        51     call timer_interrupt
-                        52     reti ; return from interup
+000B 120036             44     call LONG_PRESS_DETECED
+000E 32                 45     reti ; return from interupt
 ****WARNING:Missing`END'directive
-ASSEMBLY COMPLETE, NO ERRORS FOUND, 8 WARNINGS
+ASSEMBLY COMPLETE, NO ERRORS FOUND, 2 WARNINGS
 
 
 ERROR SUMMARY:
-Line 17, ERROR:Givenregisterdoesnotbelongtothebitaddressablearea:R0.1
-Line 18, ERROR:Symbolnotdefined:r0
-Line 39, ERROR:Givenregisterdoesnotbelongtothebitaddressablearea:R0.1
-Line 40, ERROR:Symbolnotdefined:r0
-Line 50, ERROR:Givenregisterdoesnotbelongtothebitaddressablearea:R0.1
-Line 51, ERROR:Symbolnotdefined:r0
-Line 56, WARNING:ThisORGhaslowervaluethanthepreviousone
-Line 59, WARNING:Missing`END'directive
+Line 43, WARNING:ThisORGhaslowervaluethanthepreviousone
+Line 46, WARNING:Missing`END'directive
 
 SYMBOL TABLE:
 ??MCU_8051_IDE . . . . . . . . . . .  N  NUMB  8051H  NOT USED
@@ -89,6 +70,7 @@ B. . . . . . . . . . . . . . . . . .  D  ADDR  00F0H  NOT USED
 BDRCON . . . . . . . . . . . . . . .  D  ADDR  009BH  NOT USED
 BDRCON_1 . . . . . . . . . . . . . .  D  ADDR  009CH  NOT USED
 BRL. . . . . . . . . . . . . . . . .  D  ADDR  009AH  NOT USED
+BTN_LOOP . . . . . . . . . . . . . .  C  ADDR  0016H
 BUTTON . . . . . . . . . . . . . . .  N  NUMB  0080H
 CCAP0H . . . . . . . . . . . . . . .  D  ADDR  00FAH  NOT USED
 CCAP0L . . . . . . . . . . . . . . .  D  ADDR  00EAH  NOT USED
@@ -148,8 +130,7 @@ EXTI0. . . . . . . . . . . . . . . .  C  ADDR  0003H  NOT USED
 EXTI1. . . . . . . . . . . . . . . .  C  ADDR  0013H  NOT USED
 F0 . . . . . . . . . . . . . . . . .  B  ADDR  00D5H  NOT USED
 FE . . . . . . . . . . . . . . . . .  B  ADDR  009FH  NOT USED
-FINISH_CHAR. . . . . . . . . . . . .  C  ADDR  0022H
-IE . . . . . . . . . . . . . . . . .  D  ADDR  00A8H  NOT USED
+IE . . . . . . . . . . . . . . . . .  D  ADDR  00A8H
 IE0. . . . . . . . . . . . . . . . .  B  ADDR  0089H  NOT USED
 IE1. . . . . . . . . . . . . . . . .  B  ADDR  008BH  NOT USED
 INIT . . . . . . . . . . . . . . . .  C  ADDR  0010H
@@ -166,9 +147,7 @@ IT1. . . . . . . . . . . . . . . . .  B  ADDR  008AH  NOT USED
 KBE. . . . . . . . . . . . . . . . .  D  ADDR  009DH  NOT USED
 KBF. . . . . . . . . . . . . . . . .  D  ADDR  009EH  NOT USED
 KBLS . . . . . . . . . . . . . . . .  D  ADDR  009CH  NOT USED
-LONG_PRESS . . . . . . . . . . . . .  C  ADDR  0037H
-LOOP_POINT . . . . . . . . . . . . .  C  ADDR  001AH
-MAIN . . . . . . . . . . . . . . . .  C  ADDR  0016H
+LONG_PRESS_DETECED . . . . . . . . .  C  ADDR  0036H
 OSCCON . . . . . . . . . . . . . . .  D  ADDR  0086H  NOT USED
 OV . . . . . . . . . . . . . . . . .  B  ADDR  00D2H  NOT USED
 P. . . . . . . . . . . . . . . . . .  B  ADDR  00D0H  NOT USED
@@ -187,6 +166,7 @@ P5 . . . . . . . . . . . . . . . . .  D  ADDR  00E8H  NOT USED
 PC . . . . . . . . . . . . . . . . .  B  ADDR  00BEH  NOT USED
 PCON . . . . . . . . . . . . . . . .  D  ADDR  0087H  NOT USED
 PPCL . . . . . . . . . . . . . . . .  B  ADDR  00BEH  NOT USED
+PRESSED. . . . . . . . . . . . . . .  C  ADDR  001DH
 PS . . . . . . . . . . . . . . . . .  B  ADDR  00BCH  NOT USED
 PSL. . . . . . . . . . . . . . . . .  B  ADDR  00BCH  NOT USED
 PSW. . . . . . . . . . . . . . . . .  D  ADDR  00D0H  NOT USED
@@ -230,7 +210,7 @@ SPDAT. . . . . . . . . . . . . . . .  D  ADDR  00C5H  NOT USED
 SPDR . . . . . . . . . . . . . . . .  D  ADDR  0086H  NOT USED
 SPSR . . . . . . . . . . . . . . . .  D  ADDR  00AAH  NOT USED
 SPSTA. . . . . . . . . . . . . . . .  D  ADDR  00C4H  NOT USED
-START_TIMER. . . . . . . . . . . . .  C  ADDR  0024H
+START_TIMER. . . . . . . . . . . . .  C  ADDR  0023H
 T0 . . . . . . . . . . . . . . . . .  B  ADDR  00B4H  NOT USED
 T1 . . . . . . . . . . . . . . . . .  B  ADDR  00B5H  NOT USED
 T2CON. . . . . . . . . . . . . . . .  D  ADDR  00C8H  NOT USED
@@ -242,18 +222,17 @@ TF0. . . . . . . . . . . . . . . . .  B  ADDR  008DH  NOT USED
 TF1. . . . . . . . . . . . . . . . .  B  ADDR  008FH  NOT USED
 TF2. . . . . . . . . . . . . . . . .  B  ADDR  00CFH  NOT USED
 TH0. . . . . . . . . . . . . . . . .  D  ADDR  008CH
-TH1. . . . . . . . . . . . . . . . .  D  ADDR  008DH  NOT USED
+TH1. . . . . . . . . . . . . . . . .  D  ADDR  008DH
 TH2. . . . . . . . . . . . . . . . .  D  ADDR  00CDH  NOT USED
 TI . . . . . . . . . . . . . . . . .  B  ADDR  0099H  NOT USED
 TIMER0 . . . . . . . . . . . . . . .  C  ADDR  000BH  NOT USED
 TIMER1 . . . . . . . . . . . . . . .  C  ADDR  001BH  NOT USED
 TIMER2 . . . . . . . . . . . . . . .  C  ADDR  002BH  NOT USED
-TIMER_INTERRUPT. . . . . . . . . . .  C  ADDR  002EH
 TIMER_START. . . . . . . . . . . . .  N  NUMB  002AH  NOT USED
 TL0. . . . . . . . . . . . . . . . .  D  ADDR  008AH
-TL1. . . . . . . . . . . . . . . . .  D  ADDR  008BH  NOT USED
+TL1. . . . . . . . . . . . . . . . .  D  ADDR  008BH
 TL2. . . . . . . . . . . . . . . . .  D  ADDR  00CCH  NOT USED
-TMOD . . . . . . . . . . . . . . . .  D  ADDR  0089H  NOT USED
+TMOD . . . . . . . . . . . . . . . .  D  ADDR  0089H
 TR0. . . . . . . . . . . . . . . . .  B  ADDR  008CH
 TR1. . . . . . . . . . . . . . . . .  B  ADDR  008EH  NOT USED
 TR2. . . . . . . . . . . . . . . . .  B  ADDR  00CAH  NOT USED

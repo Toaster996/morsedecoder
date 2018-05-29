@@ -7,46 +7,39 @@ jmp INIT
 ; Wait for first user input
 org 10h
 INIT:
-	JB BUTTON, INIT
-	JMP START_TIMER
+ 	MOV IE, #10000010b
+	JMP BTN_LOOP
 
-MAIN:
-	MOV R0, A
-	CJNE A, #00010000b, FINISH_CHAR
-LOOP_POINT: ;Endless loop. Place refresh logic here
-	JNB R0.1, LOOP_POINT
-	MOV R0, A
-	RL A
-	MOV A, R0
-	JMP MAIN
+ BTN_LOOP:;!pressed
+ 	clr tr0
+ 	;if(R1==1){
+ 	; set R7 for long press}
+ 	;else for shortpress
 
-FINISH_CHAR:
-	MOV A, A
+ 	;Run timer to detect break
+ 	JNB BUTTON, START_TIMER
+ 	JMP BTN_LOOP
+
+ PRESSED:
+ 	JNB BUTTON, pressed
+ 	JB BUTTON, BTN_LOOP
+ 
 
 START_TIMER:
-	mov tl0, #0c0h ; working #0C0h
-	mov th0, #0c0h ; working #0C0h
-	setb tr0 ; startet timer
-	jmp loop_point
+	mov TMOD, #00000010b
+	mov tl1, #000h ; working #0C0h
+	mov th1, #000h ; working #0C0h
+	mov tl0, #000h ; working #0C0h
+	mov th0, #000h ; working #0C0h
+ 	setb tr0 ; startet timer
+	JMP PRESSED
+  
 
-TIMER_INTERRUPT:
-	JNB BUTTON, LONG_PRESS
-	MOV R0, A
-	ORL A, R7
-	MOV R7, A
-	SETB R0.1
+LONG_PRESS_DETECED:
+ 	mov r1,#1 ;save long press at R1
+	clr tr0 ;stop timer
 	RET
 
-LONG_PRESS:
-	MOV R0, A
-	RL A
-	ORL A, R7
-	ORL A, R7
-	MOV R7, A
-	SETB R0.1
-	RET
-
-
-org 0bh ; adresse von timer interrupt
-call timer_interrupt
-reti ; return from interup
+org 0bh ; adresse v on timer interrupt
+call LONG_PRESS_DETECED
+reti ; return from interupt
