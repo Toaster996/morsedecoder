@@ -20,6 +20,7 @@ INIT:
  	MOV R5, #1h
 	JMP BTN_LOOP
 
+
 BTN_LOOP:; !pressed
  	clr tr0
 
@@ -28,6 +29,7 @@ BTN_LOOP:; !pressed
  	CJNE R5, #0h, START_WAIT_TIMER
  	JNB BUTTON, START_TIMER
  	JMP BTN_LOOP
+
 
 PRESSED:
  	MOV R0, #0
@@ -46,6 +48,7 @@ START_TIMER:
  	setb tr0 ; startet timer
 	JMP PRESSED
 
+
 START_WAIT_TIMER:
 	MOV R5, #0
 	MOV TMOD, #00000010b
@@ -62,6 +65,7 @@ LONG_PRESS_DETECED:
 	clr tr0 ;stop timer
 	RET
 
+
 ANALYZE_PREV:
 	MOV A, R2
 	CJNE R1, #1h, SHORT_PRESS; if (not longpress)
@@ -73,7 +77,15 @@ ANALYZE_PREV2:
 	MOV R0, #1
 	MOV R1, #0
 	MOV R5, #1h
+
+	MOV A, R6
+	SETB A.0
+	RL A
+	JB A.4, TIME_OVER
+	MOV R6, A
+	
 	JMP BTN_LOOP
+
 		
 LONG_PRESS:
 	RL A
@@ -81,15 +93,18 @@ LONG_PRESS:
 	RL A
 	JMP ANALYZE_PREV2
 
+
 SHORT_PRESS:
 	RL A
 	RL A
 	SETB A.0
 	JMP ANALYZE_PREV2
 
+
 TIME_OVER:
-CLR t1
-RL A
-;call Phills stuff
-RET
+	CLR t1
+	RL A
+	;call Phills stuff
+	RET
+	
 	

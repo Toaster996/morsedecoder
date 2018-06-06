@@ -8,7 +8,7 @@ morser                                                                          
 000E 32                  7     reti ; return from interupt
                          8
                          9     org 1bh
-001B 12008B             10     call TIME_OVER
+001B 120093             10     call TIME_OVER
 001E 32                 11     reti
                         12
                         13
@@ -40,10 +40,10 @@ morser                                                                          
                         39
                         40     START_TIMER:
 0042 758902             41             MOV TMOD, #00000010b
-0045 758BE0             42             mov tl1, #0E0h ; working #0C0h
-0048 758DE0             43             mov th1, #0E0h ; working #0C0h
-004B 758AE0             44             mov tl0, #0E0h ; working #0C0h
-004E 758CE0             45             mov th0, #0E0h ; working #0C0h
+0045 758BC0             42             mov tl1, #0C0h ; working #0C0h
+0048 758DC0             43             mov th1, #0C0h ; working #0C0h
+004B 758AC0             44             mov tl0, #0C0h ; working #0C0h
+004E 758CC0             45             mov th0, #0C0h ; working #0C0h
 0051 D28C               46             setb tr0 ; startet timer
 0053 80E1               47             JMP PRESSED
                         48
@@ -65,42 +65,50 @@ morser                                                                          
                         64
                         65     ANALYZE_PREV:
 006F EA                 66             MOV A, R2
-0070 B90112             67             CJNE R1, #1h, SHORT_PRESS; if (not longpress)
-0073 B90009             68             CJNE R1, #0h, LONG_PRESS;
+0070 B9011A             67             CJNE R1, #1h, SHORT_PRESS; if (not longpress)
+0073 B90011             68             CJNE R1, #0h, LONG_PRESS;
                         69
-                        70
-                        71     ANALYZE_PREV2:
-0076 FA                 72             MOV R2, A
-0077 7801               73             MOV R0, #1
-0079 7900               74             MOV R1, #0
-007B 7D01               75             MOV R5, #1h
-007D 80AA               76             JMP BTN_LOOP
-                        77
-                        78     LONG_PRESS:
-007F 23                 79             RL A
-0080 D2E0               80             SETB A.0
-0082 23                 81             RL A
-0083 80F1               82             JMP ANALYZE_PREV2
+                        70     ANALYZE_PREV2:
+0076 FA                 71             MOV R2, A
+0077 7801               72             MOV R0, #1
+0079 7900               73             MOV R1, #0
+007B 7D01               74             MOV R5, #1h
+                        75
+007D EE                 76             MOV A, R6
+007E D2E0               77             SETB A.0
+0080 23                 78             RL A
+0081 20E20F             79             JB A.2, TIME_OVER
+0084 FE                 80             MOV R6, A
+                        81
+0085 80A2               82             JMP BTN_LOOP
                         83
-                        84     SHORT_PRESS:
-0085 23                 85             RL A
-0086 23                 86             RL A
-0087 D2E0               87             SETB A.0
-0089 80EB               88             JMP ANALYZE_PREV2
+                        84     LONG_PRESS:
+0087 23                 85             RL A
+0088 D2E0               86             SETB A.0
+008A 23                 87             RL A
+008B 80E9               88             JMP ANALYZE_PREV2
                         89
-                        90     TIME_OVER:
-008B C2B5               91     CLR t1
-008D 23                 92     RL A
-                        93     ;call Phills stuff
-008E 22                 94     RET
+                        90     SHORT_PRESS:
+008D 23                 91             RL A
+008E 23                 92             RL A
+008F D2E0               93             SETB A.0
+0091 80E3               94             JMP ANALYZE_PREV2
                         95
                         96
+                        97     TIME_OVER:
+0093 C2B5               98             CLR t1
+0095 23                 99             RL A
+                       100             ;call Phills stuff
+0096 22                101             RET
+                       102
+                       103
+                       104
 ****WARNING:Missing`END'directive
 ASSEMBLY COMPLETE, NO ERRORS FOUND, 1 WARNING
 
 
 ERROR SUMMARY:
-Line 96, WARNING:Missing`END'directive
+Line 104, WARNING:Missing`END'directive
 
 SYMBOL TABLE:
 ??MCU_8051_IDE . . . . . . . . . . .  N  NUMB  8051H  NOT USED
@@ -198,7 +206,7 @@ IT1. . . . . . . . . . . . . . . . .  B  ADDR  008AH  NOT USED
 KBE. . . . . . . . . . . . . . . . .  D  ADDR  009DH  NOT USED
 KBF. . . . . . . . . . . . . . . . .  D  ADDR  009EH  NOT USED
 KBLS . . . . . . . . . . . . . . . .  D  ADDR  009CH  NOT USED
-LONG_PRESS . . . . . . . . . . . . .  C  ADDR  007FH
+LONG_PRESS . . . . . . . . . . . . .  C  ADDR  0087H
 LONG_PRESS_DETECED . . . . . . . . .  C  ADDR  006AH
 OSCCON . . . . . . . . . . . . . . .  D  ADDR  0086H  NOT USED
 OV . . . . . . . . . . . . . . . . .  B  ADDR  00D2H  NOT USED
@@ -251,7 +259,7 @@ SADEN_0. . . . . . . . . . . . . . .  D  ADDR  00B9H  NOT USED
 SADEN_1. . . . . . . . . . . . . . .  D  ADDR  00BAH  NOT USED
 SBUF . . . . . . . . . . . . . . . .  D  ADDR  0099H  NOT USED
 SCON . . . . . . . . . . . . . . . .  D  ADDR  0098H  NOT USED
-SHORT_PRESS. . . . . . . . . . . . .  C  ADDR  0085H
+SHORT_PRESS. . . . . . . . . . . . .  C  ADDR  008DH
 SINT . . . . . . . . . . . . . . . .  C  ADDR  0023H  NOT USED
 SM0. . . . . . . . . . . . . . . . .  B  ADDR  009FH  NOT USED
 SM1. . . . . . . . . . . . . . . . .  B  ADDR  009EH  NOT USED
@@ -283,7 +291,7 @@ TIMER0 . . . . . . . . . . . . . . .  C  ADDR  000BH  NOT USED
 TIMER1 . . . . . . . . . . . . . . .  C  ADDR  001BH  NOT USED
 TIMER2 . . . . . . . . . . . . . . .  C  ADDR  002BH  NOT USED
 TIMER_START. . . . . . . . . . . . .  N  NUMB  002AH  NOT USED
-TIME_OVER. . . . . . . . . . . . . .  C  ADDR  008BH
+TIME_OVER. . . . . . . . . . . . . .  C  ADDR  0093H
 TL0. . . . . . . . . . . . . . . . .  D  ADDR  008AH
 TL1. . . . . . . . . . . . . . . . .  D  ADDR  008BH
 TL2. . . . . . . . . . . . . . . . .  D  ADDR  00CCH  NOT USED
