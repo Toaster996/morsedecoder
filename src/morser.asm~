@@ -29,6 +29,7 @@ INIT:
 ; End display init
  	MOV IE, #10001010b ;enables interupt
  	MOV R0, #1h
+ 	MOV R4, #11111111b
  	MOV R5, #1h
 	JMP BTN_LOOP
 
@@ -116,6 +117,7 @@ SHORT_PRESS:
 TIME_OVER:
 	CLR tr1
 	Call ENCODE_BITMASK
+	JMP BTN_LOOP
 ;	RL A
 	;call Phills stuff
 ;	RET
@@ -179,6 +181,7 @@ ENCODE_BITMASK:
 	MOV R4, A ; save value for led display
 	MOV R3, #11111111b; reset r3 to error 
 	CALL DISPLAY_LETTER
+	MOV R2, #0h
 	RET
 
 CMND:
