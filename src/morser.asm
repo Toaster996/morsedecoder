@@ -114,10 +114,11 @@ SHORT_PRESS:
 
 
 TIME_OVER:
-	CLR t1
-	RL A
+	CLR tr1
+	Call ENCODE_BITMASK
+;	RL A
 	;call Phills stuff
-	RET
+;	RET
 
 ENCODE_BITMASK:
 	MOV A, R2

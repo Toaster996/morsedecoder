@@ -15,6 +15,18 @@ INIT:
 	TIMER_START EQU 42d
 	BUTTON EQU P0.0
 
+; Display init
+	MOV A,#30H ; Use 1 line and 5x7 matrix
+	ACALL CMND
+	MOV A,#0FH ; LCD ON, cursor ON, cursor blinking ON
+	ACALL CMND
+	MOV A,#01H ; Clear screen
+	ACALL CMND
+	MOV A,#06H ; shift cursor right
+	ACALL CMND
+	MOV A,#80H ; postion cursor
+	ACALL CMND
+; End display init
  	MOV IE, #10001010b ;enables interupt
  	MOV R0, #1h
  	MOV R5, #1h
@@ -102,9 +114,106 @@ SHORT_PRESS:
 
 
 TIME_OVER:
-	CLR t1
-	RL A
+	CLR tr1
+	Call ENCODE_BITMASK
+;	RL A
 	;call Phills stuff
+;	RET
+
+ENCODE_BITMASK:
+	MOV A, R2
+	CJNE A, #00000110b, ENCODE_BITMASK + 6; A
+	MOV R3, #0d
+	CJNE A, #10010101b, ENCODE_BITMASK + 11; B
+	MOV R3, #1d
+	CJNE A, #10011001b, ENCODE_BITMASK + 16; C 
+	MOV R3, #2d
+	CJNE A, #00100101b, ENCODE_BITMASK + 21; D 
+	MOV R3, #3d
+	CJNE A, #00000001b, ENCODE_BITMASK + 26; E 
+	MOV R3, #4d
+	CJNE A, #01011001b, ENCODE_BITMASK + 31; F 
+	MOV R3, #5d
+	CJNE A, #00101001b, ENCODE_BITMASK + 36; G
+	MOV R3, #6d
+	CJNE A, #01010101b, ENCODE_BITMASK + 41; H 
+	MOV R3, #7d
+	CJNE A, #00000101b, ENCODE_BITMASK + 46; I 
+	MOV R3, #8d
+	CJNE A, #01101010b, ENCODE_BITMASK + 51; J 
+	MOV R3, #9d
+	CJNE A, #00100110b, ENCODE_BITMASK + 56; K 
+	MOV R3, #10d
+	CJNE A, #01100101b, ENCODE_BITMASK + 61; L 
+	MOV R3, #11d
+	CJNE A, #00001010b, ENCODE_BITMASK + 66; M 
+	MOV R3, #12d
+	CJNE A, #00001001b, ENCODE_BITMASK + 71; N 
+	MOV R3, #13d
+	CJNE A, #00101010b, ENCODE_BITMASK + 76; O
+	MOV R3, #14d
+	CJNE A, #01101001b, ENCODE_BITMASK + 81; P 
+	MOV R3, #15d
+	CJNE A, #10100110b, ENCODE_BITMASK + 86; Q 
+	MOV R3, #16d
+	CJNE A, #00011001b, ENCODE_BITMASK + 91; R 
+	MOV R3, #17d
+	CJNE A, #00010101b, ENCODE_BITMASK + 96; S 
+	MOV R3, #18d
+	CJNE A, #00000010b, ENCODE_BITMASK + 101; T 
+	MOV R3, #19d
+	CJNE A, #00010110b, ENCODE_BITMASK + 106; U 
+	MOV R3, #20d
+	CJNE A, #01010110b, ENCODE_BITMASK + 111; V 
+	MOV R3, #21d
+	CJNE A, #00011010b, ENCODE_BITMASK + 116; W 
+	MOV R3, #22d
+	CJNE A, #10010110b, ENCODE_BITMASK + 121; X 
+	MOV R3, #23d
+	CJNE A, #10011010b, ENCODE_BITMASK + 126; Y 
+	MOV R3, #24d
+	CJNE A, #10100101b, ENCODE_BITMASK + 131; Z 
+	MOV R3, #25d
+	MOV A, R3
+	ADD A, #65d ; A is asci 65
+	MOV R4, A ; save value for led display
+	MOV R3, #11111111b; reset r3 to error 
+	CALL DISPLAY_LETTER
 	RET
-	
-	
+
+CMND:
+	ACALL READY
+	CLR P0.1
+	CLR P0.2
+	MOV P1, A
+	SETB P0.3
+	CLR P0.3
+	RET
+
+DISPLAY:
+	ACALL READY
+	MOV P1, A
+	SETB P0.1
+	CLR P0.2
+	SETB P0.3
+	CLR P0.3
+	RET
+
+READY:
+	SETB P1.7
+	CLR P0.1
+	SETB P0.2
+BACK:
+	SETB P0.3
+	CLR P0.3
+	JB P1.7, BACK
+	RET
+;Set R/W Pin of the LCD HIGH(read from the LCD)
+;Select the instruction register by setting RS pin LOW
+;Enable the LCD by Setting the enable pin HIGH
+; The most significant bit of the LCD data bus is the state of the busy flag(1=Busy,0=ready to accept instructions/data).The other bits hold the current value of the address counter.
+
+DISPLAY_LETTER:
+	MOV A, R4
+	ACALL DISPLAY
+	RET
