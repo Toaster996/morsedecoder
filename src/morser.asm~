@@ -29,7 +29,7 @@ INIT:
 ; End display init
  	MOV IE, #10001010b ;enables interupt
  	MOV R0, #1h
- 	MOV R4, #11111111b
+ 	MOV R3, #190d; Error value
  	MOV R5, #0h
  	MOV TMOD, #00000000b
 	JMP BTN_LOOP
@@ -183,9 +183,10 @@ ENCODE_BITMASK:
 	MOV A, R3
 	ADD A, #65d ; A is asci 65
 	MOV R4, A ; save value for led display
-	MOV R3, #11111111b; reset r3 to error 
+	MOV R3, #190d; reset r3 to error: 190 + 65 = 255
 	CALL DISPLAY_LETTER
 	MOV R2, #0h
+	MOV R6, #0h
 	RET
 
 CMND:

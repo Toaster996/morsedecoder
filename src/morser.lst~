@@ -8,7 +8,7 @@ morser                                                                          
 000E 32                  7     reti ; return from interupt
                          8
                          9     org 1bh
-001B 1200AF             10     call TIME_OVER
+001B 1200B1             10     call TIME_OVER
 001E 32                 11     reti
                         12
                         13
@@ -18,20 +18,20 @@ morser                                                                          
                         17
                         18     ; Display init
 001F 7430               19             MOV A,#30H ; Use 1 line and 5x7 matrix
-0021 3146               20             ACALL CMND
+0021 314A               20             ACALL CMND
 0023 740F               21             MOV A,#0FH ; LCD ON, cursor ON, cursor blinking ON
-0025 3146               22             ACALL CMND
+0025 314A               22             ACALL CMND
 0027 7401               23             MOV A,#01H ; Clear screen
-0029 3146               24             ACALL CMND
+0029 314A               24             ACALL CMND
 002B 7406               25             MOV A,#06H ; shift cursor right
-002D 3146               26             ACALL CMND
+002D 314A               26             ACALL CMND
 002F 7480               27             MOV A,#80H ; postion cursor
-0031 3146               28             ACALL CMND
+0031 314A               28             ACALL CMND
                         29     ; End display init
 0033 75A88A             30             MOV IE, #10001010b ;enables interupt
 0036 7801               31             MOV R0, #1h
 0038 7CFF               32             MOV R4, #11111111b
-003A 7D01               33             MOV R5, #1h
+003A 7D00               33             MOV R5, #0h
 003C 758900             34             MOV TMOD, #00000000b
 003F 020042             35             JMP BTN_LOOP
                         36
@@ -116,120 +116,122 @@ morser                                                                          
                        115
                        116     TIME_OVER_2:
 00A6 C28E              117             CLR tr1
-00A8 1200B7            118             Call ENCODE_BITMASK
+00A8 1200B9            118             Call ENCODE_BITMASK
 00AB 7801              119             MOV R0, #1h
-00AD 80E8              120             JMP BACK_AGAIN
-                       121
-                       122     TIME_OVER:
-00AF C28E              123             CLR tr1
-00B1 1200B7            124             Call ENCODE_BITMASK
-00B4 7801              125             MOV R0, #1h
-00B6 22                126             RET
-                       127
-                       128     ENCODE_BITMASK:
-00B7 EA                129             MOV A, R2
-00B8 B40602            130             CJNE A, #00000110b, ENCODE_BITMASK + 6; A
-00BB 7B00              131             MOV R3, #0d
-00BD B49502            132             CJNE A, #10010101b, ENCODE_BITMASK + 11; B
-00C0 7B01              133             MOV R3, #1d
-00C2 B49902            134             CJNE A, #10011001b, ENCODE_BITMASK + 16; C
-00C5 7B02              135             MOV R3, #2d
-00C7 B42502            136             CJNE A, #00100101b, ENCODE_BITMASK + 21; D
-00CA 7B03              137             MOV R3, #3d
-00CC B40102            138             CJNE A, #00000001b, ENCODE_BITMASK + 26; E
-00CF 7B04              139             MOV R3, #4d
-00D1 B45902            140             CJNE A, #01011001b, ENCODE_BITMASK + 31; F
-00D4 7B05              141             MOV R3, #5d
-00D6 B42902            142             CJNE A, #00101001b, ENCODE_BITMASK + 36; G
-00D9 7B06              143             MOV R3, #6d
-00DB B45502            144             CJNE A, #01010101b, ENCODE_BITMASK + 41; H
-00DE 7B07              145             MOV R3, #7d
-00E0 B40502            146             CJNE A, #00000101b, ENCODE_BITMASK + 46; I
-00E3 7B08              147             MOV R3, #8d
-00E5 B46A02            148             CJNE A, #01101010b, ENCODE_BITMASK + 51; J
-00E8 7B09              149             MOV R3, #9d
-00EA B42602            150             CJNE A, #00100110b, ENCODE_BITMASK + 56; K
-00ED 7B0A              151             MOV R3, #10d
-00EF B46502            152             CJNE A, #01100101b, ENCODE_BITMASK + 61; L
-00F2 7B0B              153             MOV R3, #11d
-00F4 B40A02            154             CJNE A, #00001010b, ENCODE_BITMASK + 66; M
-00F7 7B0C              155             MOV R3, #12d
-00F9 B40902            156             CJNE A, #00001001b, ENCODE_BITMASK + 71; N
-00FC 7B0D              157             MOV R3, #13d
-00FE B42A02            158             CJNE A, #00101010b, ENCODE_BITMASK + 76; O
-0101 7B0E              159             MOV R3, #14d
-0103 B46902            160             CJNE A, #01101001b, ENCODE_BITMASK + 81; P
-0106 7B0F              161             MOV R3, #15d
-0108 B4A602            162             CJNE A, #10100110b, ENCODE_BITMASK + 86; Q
-010B 7B10              163             MOV R3, #16d
-010D B41902            164             CJNE A, #00011001b, ENCODE_BITMASK + 91; R
-0110 7B11              165             MOV R3, #17d
-0112 B41502            166             CJNE A, #00010101b, ENCODE_BITMASK + 96; S
-0115 7B12              167             MOV R3, #18d
-0117 B40202            168             CJNE A, #00000010b, ENCODE_BITMASK + 101; T
-011A 7B13              169             MOV R3, #19d
-011C B41602            170             CJNE A, #00010110b, ENCODE_BITMASK + 106; U
-011F 7B14              171             MOV R3, #20d
-0121 B45602            172             CJNE A, #01010110b, ENCODE_BITMASK + 111; V
-0124 7B15              173             MOV R3, #21d
-0126 B41A02            174             CJNE A, #00011010b, ENCODE_BITMASK + 116; W
-0129 7B16              175             MOV R3, #22d
-012B B49602            176             CJNE A, #10010110b, ENCODE_BITMASK + 121; X
-012E 7B17              177             MOV R3, #23d
-0130 B49A02            178             CJNE A, #10011010b, ENCODE_BITMASK + 126; Y
-0133 7B18              179             MOV R3, #24d
-0135 B4A502            180             CJNE A, #10100101b, ENCODE_BITMASK + 131; Z
-0138 7B19              181             MOV R3, #25d
-013A EB                182             MOV A, R3
-013B 2441              183             ADD A, #65d ; A is asci 65
-013D FC                184             MOV R4, A ; save value for led display
-013E 7BFF              185             MOV R3, #11111111b; reset r3 to error
-0140 12016E            186             CALL DISPLAY_LETTER
-0143 7A00              187             MOV R2, #0h
-0145 22                188             RET
-                       189
-                       190     CMND:
-0146 3160              191             ACALL READY
-0148 C281              192             CLR P0.1
-014A C282              193             CLR P0.2
-014C F590              194             MOV P1, A
-014E D283              195             SETB P0.3
-0150 C283              196             CLR P0.3
-0152 22                197             RET
-                       198
-                       199     DISPLAY:
-0153 3160              200             ACALL READY
-0155 F590              201             MOV P1, A
-0157 D281              202             SETB P0.1
-0159 C282              203             CLR P0.2
-015B D283              204             SETB P0.3
-015D C283              205             CLR P0.3
-015F 22                206             RET
-                       207
-                       208     READY:
-0160 D297              209             SETB P1.7
-0162 C281              210             CLR P0.1
-0164 D282              211             SETB P0.2
-                       212     BACK:
-0166 D283              213             SETB P0.3
-0168 C283              214             CLR P0.3
-016A 2097F9            215             JB P1.7, BACK
-016D 22                216             RET
-                       217     ;Set R/W Pin of the LCD HIGH(read from the LCD)
-                       218     ;Select the instruction register by setting RS pin LOW
-                       219     ;Enable the LCD by Setting the enable pin HIGH
-                       220     ; The most significant bit of the LCD data bus is the state of the busy flag(1=Busy,0=ready to accept
-                       221
-                       222     DISPLAY_LETTER:
-016E EC                223             MOV A, R4
-016F 3153              224             ACALL DISPLAY
-0171 22                225             RET
+00AD 7D00              120             MOV R5, #0h
+00AF 80E6              121             JMP BACK_AGAIN
+                       122
+                       123     TIME_OVER:
+00B1 C28E              124             CLR tr1
+00B3 1200B9            125             Call ENCODE_BITMASK
+00B6 7801              126             MOV R0, #1h
+00B8 22                127             RET
+                       128
+                       129     ENCODE_BITMASK:
+00B9 EA                130             MOV A, R2
+00BA B40602            131             CJNE A, #00000110b, ENCODE_BITMASK + 6; A
+00BD 7B00              132             MOV R3, #0d
+00BF B49502            133             CJNE A, #10010101b, ENCODE_BITMASK + 11; B
+00C2 7B01              134             MOV R3, #1d
+00C4 B49902            135             CJNE A, #10011001b, ENCODE_BITMASK + 16; C
+00C7 7B02              136             MOV R3, #2d
+00C9 B42502            137             CJNE A, #00100101b, ENCODE_BITMASK + 21; D
+00CC 7B03              138             MOV R3, #3d
+00CE B40102            139             CJNE A, #00000001b, ENCODE_BITMASK + 26; E
+00D1 7B04              140             MOV R3, #4d
+00D3 B45902            141             CJNE A, #01011001b, ENCODE_BITMASK + 31; F
+00D6 7B05              142             MOV R3, #5d
+00D8 B42902            143             CJNE A, #00101001b, ENCODE_BITMASK + 36; G
+00DB 7B06              144             MOV R3, #6d
+00DD B45502            145             CJNE A, #01010101b, ENCODE_BITMASK + 41; H
+00E0 7B07              146             MOV R3, #7d
+00E2 B40502            147             CJNE A, #00000101b, ENCODE_BITMASK + 46; I
+00E5 7B08              148             MOV R3, #8d
+00E7 B46A02            149             CJNE A, #01101010b, ENCODE_BITMASK + 51; J
+00EA 7B09              150             MOV R3, #9d
+00EC B42602            151             CJNE A, #00100110b, ENCODE_BITMASK + 56; K
+00EF 7B0A              152             MOV R3, #10d
+00F1 B46502            153             CJNE A, #01100101b, ENCODE_BITMASK + 61; L
+00F4 7B0B              154             MOV R3, #11d
+00F6 B40A02            155             CJNE A, #00001010b, ENCODE_BITMASK + 66; M
+00F9 7B0C              156             MOV R3, #12d
+00FB B40902            157             CJNE A, #00001001b, ENCODE_BITMASK + 71; N
+00FE 7B0D              158             MOV R3, #13d
+0100 B42A02            159             CJNE A, #00101010b, ENCODE_BITMASK + 76; O
+0103 7B0E              160             MOV R3, #14d
+0105 B46902            161             CJNE A, #01101001b, ENCODE_BITMASK + 81; P
+0108 7B0F              162             MOV R3, #15d
+010A B4A602            163             CJNE A, #10100110b, ENCODE_BITMASK + 86; Q
+010D 7B10              164             MOV R3, #16d
+010F B41902            165             CJNE A, #00011001b, ENCODE_BITMASK + 91; R
+0112 7B11              166             MOV R3, #17d
+0114 B41502            167             CJNE A, #00010101b, ENCODE_BITMASK + 96; S
+0117 7B12              168             MOV R3, #18d
+0119 B40202            169             CJNE A, #00000010b, ENCODE_BITMASK + 101; T
+011C 7B13              170             MOV R3, #19d
+011E B41602            171             CJNE A, #00010110b, ENCODE_BITMASK + 106; U
+0121 7B14              172             MOV R3, #20d
+0123 B45602            173             CJNE A, #01010110b, ENCODE_BITMASK + 111; V
+0126 7B15              174             MOV R3, #21d
+0128 B41A02            175             CJNE A, #00011010b, ENCODE_BITMASK + 116; W
+012B 7B16              176             MOV R3, #22d
+012D B49602            177             CJNE A, #10010110b, ENCODE_BITMASK + 121; X
+0130 7B17              178             MOV R3, #23d
+0132 B49A02            179             CJNE A, #10011010b, ENCODE_BITMASK + 126; Y
+0135 7B18              180             MOV R3, #24d
+0137 B4A502            181             CJNE A, #10100101b, ENCODE_BITMASK + 131; Z
+013A 7B19              182             MOV R3, #25d
+013C EB                183             MOV A, R3
+013D 2441              184             ADD A, #65d ; A is asci 65
+013F FC                185             MOV R4, A ; save value for led display
+0140 7BBE              186             MOV R3, #190d; reset r3 to error: 190 + 65 = 255
+0142 120172            187             CALL DISPLAY_LETTER
+0145 7A00              188             MOV R2, #0h
+0147 7E00              189             MOV R6, #0h
+0149 22                190             RET
+                       191
+                       192     CMND:
+014A 3164              193             ACALL READY
+014C C281              194             CLR P0.1
+014E C282              195             CLR P0.2
+0150 F590              196             MOV P1, A
+0152 D283              197             SETB P0.3
+0154 C283              198             CLR P0.3
+0156 22                199             RET
+                       200
+                       201     DISPLAY:
+0157 3164              202             ACALL READY
+0159 F590              203             MOV P1, A
+015B D281              204             SETB P0.1
+015D C282              205             CLR P0.2
+015F D283              206             SETB P0.3
+0161 C283              207             CLR P0.3
+0163 22                208             RET
+                       209
+                       210     READY:
+0164 D297              211             SETB P1.7
+0166 C281              212             CLR P0.1
+0168 D282              213             SETB P0.2
+                       214     BACK:
+016A D283              215             SETB P0.3
+016C C283              216             CLR P0.3
+016E 2097F9            217             JB P1.7, BACK
+0171 22                218             RET
+                       219     ;Set R/W Pin of the LCD HIGH(read from the LCD)
+                       220     ;Select the instruction register by setting RS pin LOW
+                       221     ;Enable the LCD by Setting the enable pin HIGH
+                       222     ; The most significant bit of the LCD data bus is the state of the busy flag(1=Busy,0=ready to accept
+                       223
+                       224     DISPLAY_LETTER:
+0172 EC                225             MOV A, R4
+0173 3157              226             ACALL DISPLAY
+0175 22                227             RET
 ****WARNING:Missing`END'directive
 ASSEMBLY COMPLETE, NO ERRORS FOUND, 1 WARNING
 
 
 ERROR SUMMARY:
-Line 225, WARNING:Missing`END'directive
+Line 227, WARNING:Missing`END'directive
 
 SYMBOL TABLE:
 ??MCU_8051_IDE . . . . . . . . . . .  N  NUMB  8051H  NOT USED
@@ -247,7 +249,7 @@ ANALYZE_PREV2. . . . . . . . . . . .  C  ADDR  0089H
 AUXR . . . . . . . . . . . . . . . .  D  ADDR  008EH  NOT USED
 AUXR1. . . . . . . . . . . . . . . .  D  ADDR  00A2H  NOT USED
 B. . . . . . . . . . . . . . . . . .  D  ADDR  00F0H  NOT USED
-BACK . . . . . . . . . . . . . . . .  C  ADDR  0166H
+BACK . . . . . . . . . . . . . . . .  C  ADDR  016AH
 BACK_AGAIN . . . . . . . . . . . . .  C  ADDR  0097H
 BDRCON . . . . . . . . . . . . . . .  D  ADDR  009BH  NOT USED
 BDRCON_1 . . . . . . . . . . . . . .  D  ADDR  009CH  NOT USED
@@ -286,14 +288,14 @@ CKRL . . . . . . . . . . . . . . . .  D  ADDR  0097H  NOT USED
 CKSEL. . . . . . . . . . . . . . . .  D  ADDR  0085H  NOT USED
 CL . . . . . . . . . . . . . . . . .  D  ADDR  00E9H  NOT USED
 CLKREG . . . . . . . . . . . . . . .  D  ADDR  008FH  NOT USED
-CMND . . . . . . . . . . . . . . . .  C  ADDR  0146H
+CMND . . . . . . . . . . . . . . . .  C  ADDR  014AH
 CMOD . . . . . . . . . . . . . . . .  D  ADDR  00D9H  NOT USED
 CPRL2. . . . . . . . . . . . . . . .  B  ADDR  00C8H  NOT USED
 CR . . . . . . . . . . . . . . . . .  B  ADDR  00DEH  NOT USED
 CT2. . . . . . . . . . . . . . . . .  B  ADDR  00C9H  NOT USED
 CY . . . . . . . . . . . . . . . . .  B  ADDR  00D7H  NOT USED
-DISPLAY. . . . . . . . . . . . . . .  C  ADDR  0153H
-DISPLAY_LETTER . . . . . . . . . . .  C  ADDR  016EH
+DISPLAY. . . . . . . . . . . . . . .  C  ADDR  0157H
+DISPLAY_LETTER . . . . . . . . . . .  C  ADDR  0172H
 DP0H . . . . . . . . . . . . . . . .  D  ADDR  0083H  NOT USED
 DP0L . . . . . . . . . . . . . . . .  D  ADDR  0082H  NOT USED
 DP1H . . . . . . . . . . . . . . . .  D  ADDR  0085H  NOT USED
@@ -303,7 +305,7 @@ DPL. . . . . . . . . . . . . . . . .  D  ADDR  0082H  NOT USED
 EA . . . . . . . . . . . . . . . . .  B  ADDR  00AFH  NOT USED
 EC . . . . . . . . . . . . . . . . .  B  ADDR  00AEH  NOT USED
 EECON. . . . . . . . . . . . . . . .  D  ADDR  0096H  NOT USED
-ENCODE_BITMASK . . . . . . . . . . .  C  ADDR  00B7H
+ENCODE_BITMASK . . . . . . . . . . .  C  ADDR  00B9H
 ES . . . . . . . . . . . . . . . . .  B  ADDR  00ACH  NOT USED
 ET0. . . . . . . . . . . . . . . . .  B  ADDR  00A9H  NOT USED
 ET1. . . . . . . . . . . . . . . . .  B  ADDR  00ABH  NOT USED
@@ -372,7 +374,7 @@ RCAP2H . . . . . . . . . . . . . . .  D  ADDR  00CBH  NOT USED
 RCAP2L . . . . . . . . . . . . . . .  D  ADDR  00CAH  NOT USED
 RCLK . . . . . . . . . . . . . . . .  B  ADDR  00CDH  NOT USED
 RD . . . . . . . . . . . . . . . . .  B  ADDR  00B7H  NOT USED
-READY. . . . . . . . . . . . . . . .  C  ADDR  0160H
+READY. . . . . . . . . . . . . . . .  C  ADDR  0164H
 REN. . . . . . . . . . . . . . . . .  B  ADDR  009CH  NOT USED
 RESET. . . . . . . . . . . . . . . .  C  ADDR  0000H  NOT USED
 RI . . . . . . . . . . . . . . . . .  B  ADDR  0098H  NOT USED
@@ -419,7 +421,7 @@ TIMER0 . . . . . . . . . . . . . . .  C  ADDR  000BH  NOT USED
 TIMER1 . . . . . . . . . . . . . . .  C  ADDR  001BH  NOT USED
 TIMER2 . . . . . . . . . . . . . . .  C  ADDR  002BH  NOT USED
 TIMER_START. . . . . . . . . . . . .  N  NUMB  002AH  NOT USED
-TIME_OVER. . . . . . . . . . . . . .  C  ADDR  00AFH
+TIME_OVER. . . . . . . . . . . . . .  C  ADDR  00B1H
 TIME_OVER_2. . . . . . . . . . . . .  C  ADDR  00A6H
 TL0. . . . . . . . . . . . . . . . .  D  ADDR  008AH
 TL1. . . . . . . . . . . . . . . . .  D  ADDR  008BH
