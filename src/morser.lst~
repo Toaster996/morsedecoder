@@ -30,7 +30,7 @@ morser                                                                          
                         29     ; End display init
 0033 75A88A             30             MOV IE, #10001010b ;enables interupt
 0036 7801               31             MOV R0, #1h
-0038 7CFF               32             MOV R4, #11111111b
+0038 7BBE               32             MOV R3, #190d; Error value
 003A 7D00               33             MOV R5, #0h
 003C 758900             34             MOV TMOD, #00000000b
 003F 020042             35             JMP BTN_LOOP

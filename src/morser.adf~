@@ -1,7 +1,7 @@
 # Assembler debug file for MCU 8051 IDE v1.4.9
 # Used assembler: MCU 8051 IDE
 # Date: 06/13/2018
-447B7B5934BF8371594E1433319DD84C "C:/Users/D067858/Documents/DHBW/Systemnahe Programmierung/morsedecoder/src/morser.asm" 
+ECBB37D75B0CD8DF62CB6937D0A576A1 "C:/Users/D067858/Documents/DHBW/Systemnahe Programmierung/morsedecoder/src/morser.asm" 
 0 2 0 2 0 31
 0 6 11 18 0 125
 0 7 14 50
@@ -19,7 +19,7 @@
 0 28 49 49 74
 0 30 51 117 168 138
 0 31 54 120 1
-0 32 56 124 255
+0 32 56 123 190
 0 33 58 125 0
 0 34 60 117 137 0
 0 35 63 2 0 66

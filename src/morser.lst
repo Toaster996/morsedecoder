@@ -226,12 +226,13 @@ morser                                                                          
 0172 EC                225             MOV A, R4
 0173 3157              226             ACALL DISPLAY
 0175 22                227             RET
+                       228
 ****WARNING:Missing`END'directive
 ASSEMBLY COMPLETE, NO ERRORS FOUND, 1 WARNING
 
 
 ERROR SUMMARY:
-Line 227, WARNING:Missing`END'directive
+Line 228, WARNING:Missing`END'directive
 
 SYMBOL TABLE:
 ??MCU_8051_IDE . . . . . . . . . . .  N  NUMB  8051H  NOT USED
