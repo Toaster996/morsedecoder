@@ -6,7 +6,7 @@ org 0bh ; adresse v on timer interrupt
 call LONG_PRESS_DETECED
 reti ; return from interupt
 
-org 1bh 
+org 1bh
 call TIME_OVER
 reti
 
@@ -30,7 +30,8 @@ INIT:
  	MOV IE, #10001010b ;enables interupt
  	MOV R0, #1h
  	MOV R4, #11111111b
- 	MOV R5, #1h
+ 	MOV R5, #0h
+ 	MOV TMOD, #00000000b
 	JMP BTN_LOOP
 
 
@@ -53,22 +54,20 @@ PRESSED:
  
 
 START_TIMER:
-	MOV TMOD, #00000010b
-	mov tl1, #0C0h ; working #0C0h
-	mov th1, #0C0h ; working #0C0h
-	mov tl0, #0C0h ; working #0C0h
-	mov th0, #0C0h ; working #0C0h
+	mov tl1, #0FCh ; working #0C0h
+	mov th1, #0FCh ; working #0C0h
+	mov tl0, #0FCh ; working #0C0h
+	mov th0, #0FCh ; working #0C0h
  	setb tr0 ; startet timer
 	JMP PRESSED
 
 
 START_WAIT_TIMER:
 	MOV R5, #0
-	MOV TMOD, #00000010b
-	mov tl1, #0F0h ; working #0C0h
-	mov th1, #0F0h ; working #0C0h
-	mov tl0, #0F0h ; working #0C0h
-	mov th0, #0F0h ; working #0C0h
+	mov tl1, #0FCh ; working #0C0h
+	mov th1, #0FCh ; working #0C0h
+	mov tl0, #0FCh ; working #0C0h
+	mov th0, #0FCh ; working #0C0h
  	setb tr1 ; startet timer
 	JMP BTN_LOOP
   
@@ -94,9 +93,9 @@ ANALYZE_PREV2:
 	MOV A, R6
 	SETB A.0
 	RL A
-	JB A.4, TIME_OVER
+	JB A.4, TIME_OVER_2
+BACK_AGAIN:
 	MOV R6, A
-	
 	JMP BTN_LOOP
 
 		
@@ -114,13 +113,18 @@ SHORT_PRESS:
 	JMP ANALYZE_PREV2
 
 
+TIME_OVER_2:
+	CLR tr1
+	Call ENCODE_BITMASK
+	MOV R0, #1h
+	MOV R5, #0h
+	JMP BACK_AGAIN
+	
 TIME_OVER:
 	CLR tr1
 	Call ENCODE_BITMASK
-	JMP BTN_LOOP
-;	RL A
-	;call Phills stuff
-;	RET
+	MOV R0, #1h
+	RET
 
 ENCODE_BITMASK:
 	MOV A, R2

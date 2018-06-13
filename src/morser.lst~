@@ -4,11 +4,11 @@ morser                                                                          
                          3
                          4     ; Wait for first user input
                          5     org 0bh ; adresse v on timer interrupt
-000B 120080              6     call LONG_PRESS_DETECED
+000B 12007D              6     call LONG_PRESS_DETECED
 000E 32                  7     reti ; return from interupt
                          8
                          9     org 1bh
-001B 1200A9             10     call TIME_OVER
+001B 1200AF             10     call TIME_OVER
 001E 32                 11     reti
                         12
                         13
@@ -18,215 +18,218 @@ morser                                                                          
                         17
                         18     ; Display init
 001F 7430               19             MOV A,#30H ; Use 1 line and 5x7 matrix
-0021 313F               20             ACALL CMND
+0021 3146               20             ACALL CMND
 0023 740F               21             MOV A,#0FH ; LCD ON, cursor ON, cursor blinking ON
-0025 313F               22             ACALL CMND
+0025 3146               22             ACALL CMND
 0027 7401               23             MOV A,#01H ; Clear screen
-0029 313F               24             ACALL CMND
+0029 3146               24             ACALL CMND
 002B 7406               25             MOV A,#06H ; shift cursor right
-002D 313F               26             ACALL CMND
+002D 3146               26             ACALL CMND
 002F 7480               27             MOV A,#80H ; postion cursor
-0031 313F               28             ACALL CMND
+0031 3146               28             ACALL CMND
                         29     ; End display init
 0033 75A88A             30             MOV IE, #10001010b ;enables interupt
 0036 7801               31             MOV R0, #1h
-0038 7CFF               32             MOV R4, #0ffh
+0038 7CFF               32             MOV R4, #11111111b
 003A 7D01               33             MOV R5, #1h
-003C 02003F             34             JMP BTN_LOOP
-                        35
+003C 758900             34             MOV TMOD, #00000000b
+003F 020042             35             JMP BTN_LOOP
                         36
-                        37     BTN_LOOP:; !pressed
-003F C28C               38             clr tr0
-                        39
-0041 B80141             40             CJNE R0, #1h, ANALYZE_PREV
-                        41             ;Run timer to detect break
-0044 BD0024             42             CJNE R5, #0h, START_WAIT_TIMER
-0047 30800E             43             JNB BUTTON, START_TIMER
-004A 80F3               44             JMP BTN_LOOP
-                        45
+                        37
+                        38     BTN_LOOP:; !pressed
+0042 C28C               39             clr tr0
+                        40
+0044 B8013B             41             CJNE R0, #1h, ANALYZE_PREV
+                        42             ;Run timer to detect break
+0047 BD0021             43             CJNE R5, #0h, START_WAIT_TIMER
+004A 30800E             44             JNB BUTTON, START_TIMER
+004D 80F3               45             JMP BTN_LOOP
                         46
-                        47     PRESSED:
-004C 7800               48             MOV R0, #0
-004E C28E               49             CLR TR1
-0050 3080F9             50             JNB BUTTON, PRESSED
-0053 7D01               51             MOV R5, #1h
-0055 2080E7             52             JB BUTTON, BTN_LOOP
-                        53
+                        47
+                        48     PRESSED:
+004F 7800               49             MOV R0, #0
+0051 C28E               50             CLR TR1
+0053 3080F9             51             JNB BUTTON, PRESSED
+0056 7D01               52             MOV R5, #1h
+0058 2080E7             53             JB BUTTON, BTN_LOOP
                         54
-                        55     START_TIMER:
-0058 758902             56             MOV TMOD, #00000010b
-005B 758BC0             57             mov tl1, #0C0h ; working #0C0h
-005E 758DC0             58             mov th1, #0C0h ; working #0C0h
-0061 758AC0             59             mov tl0, #0C0h ; working #0C0h
-0064 758CC0             60             mov th0, #0C0h ; working #0C0h
+                        55
+                        56     START_TIMER:
+005B 758BFC             57             mov tl1, #0FCh ; working #0C0h
+005E 758DFC             58             mov th1, #0FCh ; working #0C0h
+0061 758AFC             59             mov tl0, #0FCh ; working #0C0h
+0064 758CFC             60             mov th0, #0FCh ; working #0C0h
 0067 D28C               61             setb tr0 ; startet timer
-0069 80E1               62             JMP PRESSED
+0069 80E4               62             JMP PRESSED
                         63
                         64
                         65     START_WAIT_TIMER:
 006B 7D00               66             MOV R5, #0
-006D 758902             67             MOV TMOD, #00000010b
-0070 758BF0             68             mov tl1, #0F0h ; working #0C0h
-0073 758DF0             69             mov th1, #0F0h ; working #0C0h
-0076 758AF0             70             mov tl0, #0F0h ; working #0C0h
-0079 758CF0             71             mov th0, #0F0h ; working #0C0h
-007C D28E               72             setb tr1 ; startet timer
-007E 80BF               73             JMP BTN_LOOP
+006D 758BFC             67             mov tl1, #0FCh ; working #0C0h
+0070 758DFC             68             mov th1, #0FCh ; working #0C0h
+0073 758AFC             69             mov tl0, #0FCh ; working #0C0h
+0076 758CFC             70             mov th0, #0FCh ; working #0C0h
+0079 D28E               71             setb tr1 ; startet timer
+007B 80C5               72             JMP BTN_LOOP
+                        73
                         74
-                        75
-                        76     LONG_PRESS_DETECED:
-0080 7901               77             mov r1,#1 ;save long press at R1
-0082 C28C               78             clr tr0 ;stop timer
-0084 22                 79             RET
+                        75     LONG_PRESS_DETECED:
+007D 7901               76             mov r1,#1 ;save long press at R1
+007F C28C               77             clr tr0 ;stop timer
+0081 22                 78             RET
+                        79
                         80
-                        81
-                        82     ANALYZE_PREV:
-0085 EA                 83             MOV A, R2
-0086 B9011A             84             CJNE R1, #1h, SHORT_PRESS; if (not longpress)
-0089 B90011             85             CJNE R1, #0h, LONG_PRESS;
+                        81     ANALYZE_PREV:
+0082 EA                 82             MOV A, R2
+0083 B9011A             83             CJNE R1, #1h, SHORT_PRESS; if (not longpress)
+0086 B90011             84             CJNE R1, #0h, LONG_PRESS;
+                        85
                         86
-                        87
-                        88     ANALYZE_PREV2:
-008C FA                 89             MOV R2, A
-008D 7801               90             MOV R0, #1
-008F 7900               91             MOV R1, #0
-0091 7D01               92             MOV R5, #1h
-                        93
-0093 EE                 94             MOV A, R6
-0094 D2E0               95             SETB A.0
-0096 23                 96             RL A
-0097 20E40F             97             JB A.4, TIME_OVER
-009A FE                 98             MOV R6, A
-                        99
-009B 80A2              100             JMP BTN_LOOP
+                        87     ANALYZE_PREV2:
+0089 FA                 88             MOV R2, A
+008A 7801               89             MOV R0, #1
+008C 7900               90             MOV R1, #0
+008E 7D01               91             MOV R5, #1h
+                        92
+0090 EE                 93             MOV A, R6
+0091 D2E0               94             SETB A.0
+0093 23                 95             RL A
+0094 20E40F             96             JB A.4, TIME_OVER_2
+                        97     BACK_AGAIN:
+0097 FE                 98             MOV R6, A
+0098 80A8               99             JMP BTN_LOOP
+                       100
                        101
-                       102
-                       103     LONG_PRESS:
-009D 23                104             RL A
-009E D2E0              105             SETB A.0
-00A0 23                106             RL A
-00A1 80E9              107             JMP ANALYZE_PREV2
+                       102     LONG_PRESS:
+009A 23                103             RL A
+009B D2E0              104             SETB A.0
+009D 23                105             RL A
+009E 80E9              106             JMP ANALYZE_PREV2
+                       107
                        108
-                       109
-                       110     SHORT_PRESS:
-00A3 23                111             RL A
-00A4 23                112             RL A
-00A5 D2E0              113             SETB A.0
-00A7 80E3              114             JMP ANALYZE_PREV2
+                       109     SHORT_PRESS:
+00A0 23                110             RL A
+00A1 23                111             RL A
+00A2 D2E0              112             SETB A.0
+00A4 80E3              113             JMP ANALYZE_PREV2
+                       114
                        115
-                       116
-                       117     TIME_OVER:
-00A9 C28E              118             CLR tr1
-00AB 1200B0            119             Call ENCODE_BITMASK
-00AE 808F              120             JMP BTN_LOOP
-                       121     ;       RL A
-                       122             ;call Phills stuff
-                       123     ;       RET
-                       124
-                       125     ENCODE_BITMASK:
-00B0 EA                126             MOV A, R2
-00B1 B40602            127             CJNE A, #00000110b, ENCODE_BITMASK + 6; A
-00B4 7B00              128             MOV R3, #0d
-00B6 B49502            129             CJNE A, #10010101b, ENCODE_BITMASK + 11; B
-00B9 7B01              130             MOV R3, #1d
-00BB B49902            131             CJNE A, #10011001b, ENCODE_BITMASK + 16; C
-00BE 7B02              132             MOV R3, #2d
-00C0 B42502            133             CJNE A, #00100101b, ENCODE_BITMASK + 21; D
-00C3 7B03              134             MOV R3, #3d
-00C5 B40102            135             CJNE A, #00000001b, ENCODE_BITMASK + 26; E
-00C8 7B04              136             MOV R3, #4d
-00CA B45902            137             CJNE A, #01011001b, ENCODE_BITMASK + 31; F
-00CD 7B05              138             MOV R3, #5d
-00CF B42902            139             CJNE A, #00101001b, ENCODE_BITMASK + 36; G
-00D2 7B06              140             MOV R3, #6d
-00D4 B45502            141             CJNE A, #01010101b, ENCODE_BITMASK + 41; H
-00D7 7B07              142             MOV R3, #7d
-00D9 B40502            143             CJNE A, #00000101b, ENCODE_BITMASK + 46; I
-00DC 7B08              144             MOV R3, #8d
-00DE B46A02            145             CJNE A, #01101010b, ENCODE_BITMASK + 51; J
-00E1 7B09              146             MOV R3, #9d
-00E3 B42602            147             CJNE A, #00100110b, ENCODE_BITMASK + 56; K
-00E6 7B0A              148             MOV R3, #10d
-00E8 B46502            149             CJNE A, #01100101b, ENCODE_BITMASK + 61; L
-00EB 7B0B              150             MOV R3, #11d
-00ED B40A02            151             CJNE A, #00001010b, ENCODE_BITMASK + 66; M
-00F0 7B0C              152             MOV R3, #12d
-00F2 B40902            153             CJNE A, #00001001b, ENCODE_BITMASK + 71; N
-00F5 7B0D              154             MOV R3, #13d
-00F7 B42A02            155             CJNE A, #00101010b, ENCODE_BITMASK + 76; O
-00FA 7B0E              156             MOV R3, #14d
-00FC B46902            157             CJNE A, #01101001b, ENCODE_BITMASK + 81; P
-00FF 7B0F              158             MOV R3, #15d
-0101 B4A602            159             CJNE A, #10100110b, ENCODE_BITMASK + 86; Q
-0104 7B10              160             MOV R3, #16d
-0106 B41902            161             CJNE A, #00011001b, ENCODE_BITMASK + 91; R
-0109 7B11              162             MOV R3, #17d
-010B B41502            163             CJNE A, #00010101b, ENCODE_BITMASK + 96; S
-010E 7B12              164             MOV R3, #18d
-0110 B40202            165             CJNE A, #00000010b, ENCODE_BITMASK + 101; T
-0113 7B13              166             MOV R3, #19d
-0115 B41602            167             CJNE A, #00010110b, ENCODE_BITMASK + 106; U
-0118 7B14              168             MOV R3, #20d
-011A B45602            169             CJNE A, #01010110b, ENCODE_BITMASK + 111; V
-011D 7B15              170             MOV R3, #21d
-011F B41A02            171             CJNE A, #00011010b, ENCODE_BITMASK + 116; W
-0122 7B16              172             MOV R3, #22d
-0124 B49602            173             CJNE A, #10010110b, ENCODE_BITMASK + 121; X
-0127 7B17              174             MOV R3, #23d
-0129 B49A02            175             CJNE A, #10011010b, ENCODE_BITMASK + 126; Y
-012C 7B18              176             MOV R3, #24d
-012E B4A502            177             CJNE A, #10100101b, ENCODE_BITMASK + 131; Z
-0131 7B19              178             MOV R3, #25d
-0133 EB                179             MOV A, R3
-0134 2441              180             ADD A, #65d ; A is asci 65
-0136 FC                181             MOV R4, A ; save value for led display
-0137 7BFF              182             MOV R3, #11111111b; reset r3 to error
-0139 120167            183             CALL DISPLAY_LETTER
-013C 7A00              184             MOV R2, #0h
-013E 22                185             RET
-                       186
-                       187     CMND:
-013F 3159              188             ACALL READY
-0141 C281              189             CLR P0.1
-0143 C282              190             CLR P0.2
-0145 F590              191             MOV P1, A
-0147 D283              192             SETB P0.3
-0149 C283              193             CLR P0.3
-014B 22                194             RET
-                       195
-                       196     DISPLAY:
-014C 3159              197             ACALL READY
-014E F590              198             MOV P1, A
-0150 D281              199             SETB P0.1
-0152 C282              200             CLR P0.2
-0154 D283              201             SETB P0.3
-0156 C283              202             CLR P0.3
-0158 22                203             RET
-                       204
-                       205     READY:
-0159 D297              206             SETB P1.7
-015B C281              207             CLR P0.1
-015D D282              208             SETB P0.2
-                       209     BACK:
-015F D283              210             SETB P0.3
-0161 C283              211             CLR P0.3
-0163 2097F9            212             JB P1.7, BACK
-0166 22                213             RET
-                       214     ;Set R/W Pin of the LCD HIGH(read from the LCD)
-                       215     ;Select the instruction register by setting RS pin LOW
-                       216     ;Enable the LCD by Setting the enable pin HIGH
-                       217     ; The most significant bit of the LCD data bus is the state of the busy flag(1=Busy,0=ready to accept
-                       218
-                       219     DISPLAY_LETTER:
-0167 EC                220             MOV A, R4
-0168 314C              221             ACALL DISPLAY
-016A 22                222             RET
+                       116     TIME_OVER_2:
+00A6 C28E              117             CLR tr1
+00A8 1200B7            118             Call ENCODE_BITMASK
+00AB 7801              119             MOV R0, #1h
+00AD 80E8              120             JMP BACK_AGAIN
+                       121
+                       122     TIME_OVER:
+00AF C28E              123             CLR tr1
+00B1 1200B7            124             Call ENCODE_BITMASK
+00B4 7801              125             MOV R0, #1h
+00B6 22                126             RET
+                       127
+                       128     ENCODE_BITMASK:
+00B7 EA                129             MOV A, R2
+00B8 B40602            130             CJNE A, #00000110b, ENCODE_BITMASK + 6; A
+00BB 7B00              131             MOV R3, #0d
+00BD B49502            132             CJNE A, #10010101b, ENCODE_BITMASK + 11; B
+00C0 7B01              133             MOV R3, #1d
+00C2 B49902            134             CJNE A, #10011001b, ENCODE_BITMASK + 16; C
+00C5 7B02              135             MOV R3, #2d
+00C7 B42502            136             CJNE A, #00100101b, ENCODE_BITMASK + 21; D
+00CA 7B03              137             MOV R3, #3d
+00CC B40102            138             CJNE A, #00000001b, ENCODE_BITMASK + 26; E
+00CF 7B04              139             MOV R3, #4d
+00D1 B45902            140             CJNE A, #01011001b, ENCODE_BITMASK + 31; F
+00D4 7B05              141             MOV R3, #5d
+00D6 B42902            142             CJNE A, #00101001b, ENCODE_BITMASK + 36; G
+00D9 7B06              143             MOV R3, #6d
+00DB B45502            144             CJNE A, #01010101b, ENCODE_BITMASK + 41; H
+00DE 7B07              145             MOV R3, #7d
+00E0 B40502            146             CJNE A, #00000101b, ENCODE_BITMASK + 46; I
+00E3 7B08              147             MOV R3, #8d
+00E5 B46A02            148             CJNE A, #01101010b, ENCODE_BITMASK + 51; J
+00E8 7B09              149             MOV R3, #9d
+00EA B42602            150             CJNE A, #00100110b, ENCODE_BITMASK + 56; K
+00ED 7B0A              151             MOV R3, #10d
+00EF B46502            152             CJNE A, #01100101b, ENCODE_BITMASK + 61; L
+00F2 7B0B              153             MOV R3, #11d
+00F4 B40A02            154             CJNE A, #00001010b, ENCODE_BITMASK + 66; M
+00F7 7B0C              155             MOV R3, #12d
+00F9 B40902            156             CJNE A, #00001001b, ENCODE_BITMASK + 71; N
+00FC 7B0D              157             MOV R3, #13d
+00FE B42A02            158             CJNE A, #00101010b, ENCODE_BITMASK + 76; O
+0101 7B0E              159             MOV R3, #14d
+0103 B46902            160             CJNE A, #01101001b, ENCODE_BITMASK + 81; P
+0106 7B0F              161             MOV R3, #15d
+0108 B4A602            162             CJNE A, #10100110b, ENCODE_BITMASK + 86; Q
+010B 7B10              163             MOV R3, #16d
+010D B41902            164             CJNE A, #00011001b, ENCODE_BITMASK + 91; R
+0110 7B11              165             MOV R3, #17d
+0112 B41502            166             CJNE A, #00010101b, ENCODE_BITMASK + 96; S
+0115 7B12              167             MOV R3, #18d
+0117 B40202            168             CJNE A, #00000010b, ENCODE_BITMASK + 101; T
+011A 7B13              169             MOV R3, #19d
+011C B41602            170             CJNE A, #00010110b, ENCODE_BITMASK + 106; U
+011F 7B14              171             MOV R3, #20d
+0121 B45602            172             CJNE A, #01010110b, ENCODE_BITMASK + 111; V
+0124 7B15              173             MOV R3, #21d
+0126 B41A02            174             CJNE A, #00011010b, ENCODE_BITMASK + 116; W
+0129 7B16              175             MOV R3, #22d
+012B B49602            176             CJNE A, #10010110b, ENCODE_BITMASK + 121; X
+012E 7B17              177             MOV R3, #23d
+0130 B49A02            178             CJNE A, #10011010b, ENCODE_BITMASK + 126; Y
+0133 7B18              179             MOV R3, #24d
+0135 B4A502            180             CJNE A, #10100101b, ENCODE_BITMASK + 131; Z
+0138 7B19              181             MOV R3, #25d
+013A EB                182             MOV A, R3
+013B 2441              183             ADD A, #65d ; A is asci 65
+013D FC                184             MOV R4, A ; save value for led display
+013E 7BFF              185             MOV R3, #11111111b; reset r3 to error
+0140 12016E            186             CALL DISPLAY_LETTER
+0143 7A00              187             MOV R2, #0h
+0145 22                188             RET
+                       189
+                       190     CMND:
+0146 3160              191             ACALL READY
+0148 C281              192             CLR P0.1
+014A C282              193             CLR P0.2
+014C F590              194             MOV P1, A
+014E D283              195             SETB P0.3
+0150 C283              196             CLR P0.3
+0152 22                197             RET
+                       198
+                       199     DISPLAY:
+0153 3160              200             ACALL READY
+0155 F590              201             MOV P1, A
+0157 D281              202             SETB P0.1
+0159 C282              203             CLR P0.2
+015B D283              204             SETB P0.3
+015D C283              205             CLR P0.3
+015F 22                206             RET
+                       207
+                       208     READY:
+0160 D297              209             SETB P1.7
+0162 C281              210             CLR P0.1
+0164 D282              211             SETB P0.2
+                       212     BACK:
+0166 D283              213             SETB P0.3
+0168 C283              214             CLR P0.3
+016A 2097F9            215             JB P1.7, BACK
+016D 22                216             RET
+                       217     ;Set R/W Pin of the LCD HIGH(read from the LCD)
+                       218     ;Select the instruction register by setting RS pin LOW
+                       219     ;Enable the LCD by Setting the enable pin HIGH
+                       220     ; The most significant bit of the LCD data bus is the state of the busy flag(1=Busy,0=ready to accept
+                       221
+                       222     DISPLAY_LETTER:
+016E EC                223             MOV A, R4
+016F 3153              224             ACALL DISPLAY
+0171 22                225             RET
 ****WARNING:Missing`END'directive
 ASSEMBLY COMPLETE, NO ERRORS FOUND, 1 WARNING
 
 
 ERROR SUMMARY:
-Line 222, WARNING:Missing`END'directive
+Line 225, WARNING:Missing`END'directive
 
 SYMBOL TABLE:
 ??MCU_8051_IDE . . . . . . . . . . .  N  NUMB  8051H  NOT USED
@@ -239,16 +242,17 @@ ADCLK. . . . . . . . . . . . . . . .  D  ADDR  00F2H  NOT USED
 ADCON. . . . . . . . . . . . . . . .  D  ADDR  00F3H  NOT USED
 ADDH . . . . . . . . . . . . . . . .  D  ADDR  00F5H  NOT USED
 ADDL . . . . . . . . . . . . . . . .  D  ADDR  00F4H  NOT USED
-ANALYZE_PREV . . . . . . . . . . . .  C  ADDR  0085H
-ANALYZE_PREV2. . . . . . . . . . . .  C  ADDR  008CH
+ANALYZE_PREV . . . . . . . . . . . .  C  ADDR  0082H
+ANALYZE_PREV2. . . . . . . . . . . .  C  ADDR  0089H
 AUXR . . . . . . . . . . . . . . . .  D  ADDR  008EH  NOT USED
 AUXR1. . . . . . . . . . . . . . . .  D  ADDR  00A2H  NOT USED
 B. . . . . . . . . . . . . . . . . .  D  ADDR  00F0H  NOT USED
-BACK . . . . . . . . . . . . . . . .  C  ADDR  015FH
+BACK . . . . . . . . . . . . . . . .  C  ADDR  0166H
+BACK_AGAIN . . . . . . . . . . . . .  C  ADDR  0097H
 BDRCON . . . . . . . . . . . . . . .  D  ADDR  009BH  NOT USED
 BDRCON_1 . . . . . . . . . . . . . .  D  ADDR  009CH  NOT USED
 BRL. . . . . . . . . . . . . . . . .  D  ADDR  009AH  NOT USED
-BTN_LOOP . . . . . . . . . . . . . .  C  ADDR  003FH
+BTN_LOOP . . . . . . . . . . . . . .  C  ADDR  0042H
 BUTTON . . . . . . . . . . . . . . .  N  NUMB  0080H
 CCAP0H . . . . . . . . . . . . . . .  D  ADDR  00FAH  NOT USED
 CCAP0L . . . . . . . . . . . . . . .  D  ADDR  00EAH  NOT USED
@@ -282,14 +286,14 @@ CKRL . . . . . . . . . . . . . . . .  D  ADDR  0097H  NOT USED
 CKSEL. . . . . . . . . . . . . . . .  D  ADDR  0085H  NOT USED
 CL . . . . . . . . . . . . . . . . .  D  ADDR  00E9H  NOT USED
 CLKREG . . . . . . . . . . . . . . .  D  ADDR  008FH  NOT USED
-CMND . . . . . . . . . . . . . . . .  C  ADDR  013FH
+CMND . . . . . . . . . . . . . . . .  C  ADDR  0146H
 CMOD . . . . . . . . . . . . . . . .  D  ADDR  00D9H  NOT USED
 CPRL2. . . . . . . . . . . . . . . .  B  ADDR  00C8H  NOT USED
 CR . . . . . . . . . . . . . . . . .  B  ADDR  00DEH  NOT USED
 CT2. . . . . . . . . . . . . . . . .  B  ADDR  00C9H  NOT USED
 CY . . . . . . . . . . . . . . . . .  B  ADDR  00D7H  NOT USED
-DISPLAY. . . . . . . . . . . . . . .  C  ADDR  014CH
-DISPLAY_LETTER . . . . . . . . . . .  C  ADDR  0167H
+DISPLAY. . . . . . . . . . . . . . .  C  ADDR  0153H
+DISPLAY_LETTER . . . . . . . . . . .  C  ADDR  016EH
 DP0H . . . . . . . . . . . . . . . .  D  ADDR  0083H  NOT USED
 DP0L . . . . . . . . . . . . . . . .  D  ADDR  0082H  NOT USED
 DP1H . . . . . . . . . . . . . . . .  D  ADDR  0085H  NOT USED
@@ -299,7 +303,7 @@ DPL. . . . . . . . . . . . . . . . .  D  ADDR  0082H  NOT USED
 EA . . . . . . . . . . . . . . . . .  B  ADDR  00AFH  NOT USED
 EC . . . . . . . . . . . . . . . . .  B  ADDR  00AEH  NOT USED
 EECON. . . . . . . . . . . . . . . .  D  ADDR  0096H  NOT USED
-ENCODE_BITMASK . . . . . . . . . . .  C  ADDR  00B0H
+ENCODE_BITMASK . . . . . . . . . . .  C  ADDR  00B7H
 ES . . . . . . . . . . . . . . . . .  B  ADDR  00ACH  NOT USED
 ET0. . . . . . . . . . . . . . . . .  B  ADDR  00A9H  NOT USED
 ET1. . . . . . . . . . . . . . . . .  B  ADDR  00ABH  NOT USED
@@ -329,8 +333,8 @@ IT1. . . . . . . . . . . . . . . . .  B  ADDR  008AH  NOT USED
 KBE. . . . . . . . . . . . . . . . .  D  ADDR  009DH  NOT USED
 KBF. . . . . . . . . . . . . . . . .  D  ADDR  009EH  NOT USED
 KBLS . . . . . . . . . . . . . . . .  D  ADDR  009CH  NOT USED
-LONG_PRESS . . . . . . . . . . . . .  C  ADDR  009DH
-LONG_PRESS_DETECED . . . . . . . . .  C  ADDR  0080H
+LONG_PRESS . . . . . . . . . . . . .  C  ADDR  009AH
+LONG_PRESS_DETECED . . . . . . . . .  C  ADDR  007DH
 OSCCON . . . . . . . . . . . . . . .  D  ADDR  0086H  NOT USED
 OV . . . . . . . . . . . . . . . . .  B  ADDR  00D2H  NOT USED
 P. . . . . . . . . . . . . . . . . .  B  ADDR  00D0H  NOT USED
@@ -349,7 +353,7 @@ P5 . . . . . . . . . . . . . . . . .  D  ADDR  00E8H  NOT USED
 PC . . . . . . . . . . . . . . . . .  B  ADDR  00BEH  NOT USED
 PCON . . . . . . . . . . . . . . . .  D  ADDR  0087H  NOT USED
 PPCL . . . . . . . . . . . . . . . .  B  ADDR  00BEH  NOT USED
-PRESSED. . . . . . . . . . . . . . .  C  ADDR  004CH
+PRESSED. . . . . . . . . . . . . . .  C  ADDR  004FH
 PS . . . . . . . . . . . . . . . . .  B  ADDR  00BCH  NOT USED
 PSL. . . . . . . . . . . . . . . . .  B  ADDR  00BCH  NOT USED
 PSW. . . . . . . . . . . . . . . . .  D  ADDR  00D0H  NOT USED
@@ -368,7 +372,7 @@ RCAP2H . . . . . . . . . . . . . . .  D  ADDR  00CBH  NOT USED
 RCAP2L . . . . . . . . . . . . . . .  D  ADDR  00CAH  NOT USED
 RCLK . . . . . . . . . . . . . . . .  B  ADDR  00CDH  NOT USED
 RD . . . . . . . . . . . . . . . . .  B  ADDR  00B7H  NOT USED
-READY. . . . . . . . . . . . . . . .  C  ADDR  0159H
+READY. . . . . . . . . . . . . . . .  C  ADDR  0160H
 REN. . . . . . . . . . . . . . . . .  B  ADDR  009CH  NOT USED
 RESET. . . . . . . . . . . . . . . .  C  ADDR  0000H  NOT USED
 RI . . . . . . . . . . . . . . . . .  B  ADDR  0098H  NOT USED
@@ -383,7 +387,7 @@ SADEN_0. . . . . . . . . . . . . . .  D  ADDR  00B9H  NOT USED
 SADEN_1. . . . . . . . . . . . . . .  D  ADDR  00BAH  NOT USED
 SBUF . . . . . . . . . . . . . . . .  D  ADDR  0099H  NOT USED
 SCON . . . . . . . . . . . . . . . .  D  ADDR  0098H  NOT USED
-SHORT_PRESS. . . . . . . . . . . . .  C  ADDR  00A3H
+SHORT_PRESS. . . . . . . . . . . . .  C  ADDR  00A0H
 SINT . . . . . . . . . . . . . . . .  C  ADDR  0023H  NOT USED
 SM0. . . . . . . . . . . . . . . . .  B  ADDR  009FH  NOT USED
 SM1. . . . . . . . . . . . . . . . .  B  ADDR  009EH  NOT USED
@@ -395,7 +399,7 @@ SPDAT. . . . . . . . . . . . . . . .  D  ADDR  00C5H  NOT USED
 SPDR . . . . . . . . . . . . . . . .  D  ADDR  0086H  NOT USED
 SPSR . . . . . . . . . . . . . . . .  D  ADDR  00AAH  NOT USED
 SPSTA. . . . . . . . . . . . . . . .  D  ADDR  00C4H  NOT USED
-START_TIMER. . . . . . . . . . . . .  C  ADDR  0058H
+START_TIMER. . . . . . . . . . . . .  C  ADDR  005BH
 START_WAIT_TIMER . . . . . . . . . .  C  ADDR  006BH
 T0 . . . . . . . . . . . . . . . . .  B  ADDR  00B4H  NOT USED
 T1 . . . . . . . . . . . . . . . . .  B  ADDR  00B5H  NOT USED
@@ -415,7 +419,8 @@ TIMER0 . . . . . . . . . . . . . . .  C  ADDR  000BH  NOT USED
 TIMER1 . . . . . . . . . . . . . . .  C  ADDR  001BH  NOT USED
 TIMER2 . . . . . . . . . . . . . . .  C  ADDR  002BH  NOT USED
 TIMER_START. . . . . . . . . . . . .  N  NUMB  002AH  NOT USED
-TIME_OVER. . . . . . . . . . . . . .  C  ADDR  00A9H
+TIME_OVER. . . . . . . . . . . . . .  C  ADDR  00AFH
+TIME_OVER_2. . . . . . . . . . . . .  C  ADDR  00A6H
 TL0. . . . . . . . . . . . . . . . .  D  ADDR  008AH
 TL1. . . . . . . . . . . . . . . . .  D  ADDR  008BH
 TL2. . . . . . . . . . . . . . . . .  D  ADDR  00CCH  NOT USED
