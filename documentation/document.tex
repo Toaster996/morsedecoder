@@ -77,7 +77,12 @@
 	\subsection{Assembler}
 	Als Assembler oder Assebly bezeichnet man eine Programmiersprache, mit welcher sich eine bestimmte Hardware oder Prozessorachitektur gezielt programmieren lässt. Asseblercode wird also gezielt für eine Architektur entwickelt und lässt sich nur auf dieser ausführen.\\
 	Der Quellcode bildet hierbei eine Folge von Maschinenbefehlen. Maschinenbefehle bestehen dabei aus einem Operationscode und meist einer weiteren Folge von Angaben wie Adressen oder Literalen.\\
-	\ref{ls:mov} zeigt hierbei einen einfachen MOV - Befehl in  der Maschinensprache von x86 Prozessoren. MOV bedeutet hierbei so viel wie mov-byte von/was, nach. Verschiedene Assembler Dialekte unterscheiden sich in der Bedeutung gleicher Befehle.\footnote{http://www.keil.com/c51/} \\
+	Listing 1 zeigt hierbei einen einfachen MOV - Befehl in  der Maschinensprache von x86 Prozessoren. MOV bedeutet hierbei so viel wie mov-byte von/was, nach. Verschiedene Assembler Dialekte unterscheiden sich in der Bedeutung gleicher Befehle.\footnote{http://www.keil.com/c51/}
+	
+	 
+	\begin{lstlisting}[caption={Beispielhafter MOV - Befehl},captionpos=b, label{ls:mov}]
+	MOV R3, #0d
+	\end{lstlisting}
 	
 	\subsection{8051 Mikrocontroller}
 	Der Intel 8051 ist ein von in den Jahren von 1980 bis 1990 unter anderen von Intel und Siemens hergestellter Mikrokontroller. Verwendung fand er in unbterschiedlichen Gebieten der Automobilindustrie, Robotik sowie der Telekommunikation.\\
@@ -103,7 +108,7 @@
 		\caption[IDE Screenshot]{Simple Keypad in IDE}
 		\label{fig:ide8051keybad}
 	\end{figure}
-	Mit dem Simple Keypad \ref{ide8051keybad} lassen sich über dedizierte Ports jeweils Schalter simulieren, welche entweder an oder aus sind. 
+	Mit dem Simple Keypad \ref{fig:ide8051keybad} lassen sich über dedizierte Ports jeweils Schalter simulieren, welche entweder an oder aus sind. 
 	
 	\subsubsection{LC Display}
 	\begin{figure}[bt]
