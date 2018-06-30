@@ -30,8 +30,30 @@
 	numbersep=8pt, 
 	frame = single, 
 }
+\title{Entwicklung eines Morsedecoder auf einem INTEL 8051}
+\date{Juni 30, 2018}
+\author{Jonas Kandels, Philipp Womser\\ DHBW Karlsruhe}
+
 
 \begin{document}
+	\begin{center}
+		\includegraphics[width=0.15\textwidth]{Bilder/DHBW.png}\par\vspace{1cm}
+		{\scshape\LARGE DHBW Karlsruhe \par}
+		\vspace{1cm}
+		{\scshape\Large Systemnahe Programmierung\par}
+		\vspace{1.5cm}
+		{\huge\bfseries Entwicklung eines Morsedecoder auf einem INTEL 8051\par}
+		\vspace{2cm}
+		{\Large\itshape Jonas Kandels, Philipp Womser\par}
+		\vfill
+		supervised by\par
+		Prof. Dr.~Ralph \textsc{Lausen}
+	\end{center}
+
+
+\vfill
+\newpage
+% Bottom of the page
 
 	\section{Einführung}
 	\subsection{Motivation}
@@ -55,18 +77,17 @@
 	\subsection{Assembler}
 	Als Assembler oder Assebly bezeichnet man eine Programmiersprache, mit welcher sich eine bestimmte Hardware oder Prozessorachitektur gezielt programmieren lässt. Asseblercode wird also gezielt für eine Architektur entwickelt und lässt sich nur auf dieser ausführen.\\
 	Der Quellcode bildet hierbei eine Folge von Maschinenbefehlen. Maschinenbefehle bestehen dabei aus einem Operationscode und meist einer weiteren Folge von Angaben wie Adressen oder Literalen.\\
-	\ref{ls:mov} zeigt hierbei einen einfachen MOV - Befehl in  der Maschinensprache von x86 Prozessoren. MOV bedeutet hierbei so viel wie mov-byte von/was, nach. Verschiedene Assembler Dialekte unterscheiden sich in der Bedeutung gleicher Befehle.\\
+	\ref{ls:mov} zeigt hierbei einen einfachen MOV - Befehl in  der Maschinensprache von x86 Prozessoren. MOV bedeutet hierbei so viel wie mov-byte von/was, nach. Verschiedene Assembler Dialekte unterscheiden sich in der Bedeutung gleicher Befehle.\footnote{http://www.keil.com/c51/} \\
 	
 	\subsection{8051 Mikrocontroller}
-	Der Intel 8051 ist ein von in den Jahren von 1980 bis 1990 unter anderen von Intel und Simens hergestellter Mikrokontroller. Verwendung fand er in unbterschiedlichen Gebieten der Automobilindustrie, Robotik sowie der Telekommunikation.\\
-	In der ursprünglichen und hier betrachteten Form handelt es sich bei dem 8051 um einen Rechner nach der Havard-Architektur \cite, welche den Programm vom Datenspeicher trennt.\\
+	Der Intel 8051 ist ein von in den Jahren von 1980 bis 1990 unter anderen von Intel und Siemens hergestellter Mikrokontroller. Verwendung fand er in unbterschiedlichen Gebieten der Automobilindustrie, Robotik sowie der Telekommunikation.\\
+	In der ursprünglichen und hier betrachteten Form handelt es sich bei dem 8051 um einen Rechner nach der Havard-Architektur \footnote{https://microcontrollergarden.blogspot.com/2014/10/harvard-architecture-of-microcontroller.html}, welche den Programm vom Datenspeicher trennt.\\
 	Der Prozessortakt ist mit 12MHz und der Befehlsatz mit 8 Bit = 1 Byte angegeben. Außerdem verfügt er über einen 4 KB Programmspeicher, 128 Byte Datenspeicher und zwei 16-Bit Timer. Andere Prozessoren der Baureihe können auch leistungsfähiger sein.\\
-
 	
 	
 	\subsection{Entwicklungsumgebung MCU 8051}
 	Zur Implementierung des Programms wurde nicht direkt an der Hardware des 8051 gearbeitet, sondern mit einer virtuellen Entwicklungsumgebung des 8051, der MCU 8051 von Mavriria Microsystems.\\
-	Vorteile des Einsatz der Virtuellen Hardware war der direkte Einblick in die verschiedenen Register und Ports des 8051 sowie der virtuellen Hardware. 
+	Vorteile des Einsatz der Virtuellen Hardware war der direkte Einblick in die verschiedenen Register und Ports des 8051 sowie der virtuellen Hardware. \footnote{https://cs.wikipedia.org/wiki/MCU_8051_IDE}
 	\begin{figure}[bt]
 		\centering
 		\includegraphics[width=0.7\linewidth]{Bilder/IDE8051}
@@ -129,7 +150,7 @@
 		\end{subfigure}
 	\end{figure}
 
-	Unzulänglichkeiten des Morse-Codes bestehen darin, dass die Fano-Bedingung für den Morse-Code nur dann enfüllt ist, wenn man das dritte Symbol, die Pause als festes Symbol definiert. Daraus ergibt sich, dass keine Wort den identischen Anfang eines anderen Wortes ist. Nach jedem erkannten Wort kann also direkt mit dem nächsten Wort weitergemacht werden.
+	Unzulänglichkeiten des Morse-Codes bestehen darin, dass die Fano-Bedingung für den Morse-Code nur dann enfüllt ist, wenn man das dritte Symbol, die Pause als festes Symbol definiert. Daraus ergibt sich, dass keine Wort den identischen Anfang eines anderen Wortes ist. Nach jedem erkannten Wort kann also direkt mit dem nächsten Wort weitergemacht werden. \footnote{https://www.britannica.com/topic/Morse-Code}
 	
 	\newpage 
 	\section{Konzept}
@@ -184,6 +205,23 @@
 	\end{lstlisting}
 	Anschließend wird der Wert des Register noch um 65 erhöht um den ASCII Wert zu ermitteln. Dieser wird dann an das LC Display gesendet. Sollte kein Wert übereinstimmen wird ein Default Wert von $11111111$ genommen, was einem voll ausgefüllten Kasten entspricht.
 
+
+	\newpage
+	\section{Zusammenfassung}
+	\subsection{Projektzusammenfassung}
+	Es lässt sich zusammenfassend festhalten, dass die Aufgabenstellung aus 1.2 erfüllt wurde. Für die Steuerung und Interpretation der Eingabe wurde ein Timer verwendet, welche die die Zeit, welche der Nutzer zur Eingabe hat misst. Wenn dieser abläuft, werden verschiedene Interrupt-Routinen ausgeführt.\\
+	Das Programm ist compilierfähig und Open Source unter einer MIT-Licence unter Github zu finden.\footnote{https://github.com/Toaster996/morsedecoder} \\
+	
+	\subsection{Weitere Ziele}
+	Aufgrund der begrenzten Zeit und der Weitläufigkeit des Projektes bietet dieses eine Vielzahl an Erweiterungsmöglichkeiten. Eine Auswahl wird im folgenden genannt.\\
+	\begin{itemize}
+		\item Bessere Abstimmung der Timer: Mit mehr Erfahrung der Nutzung ließe sich die Wartezeiten für beide Timer Optimierungen, um die Verwendung des Morsedecoder angenehmer zu machen.
+		\item Vereinfachung der Eingabe durch Verwendung eines weiteren Schalters. Durch diesen Schalter könnter der Nutzer mitteilen, wenn eine Worteingabe abgeschlossen ist, ohne auf einen Timer warten zu müssen.
+		\item Da die Entwicklung nur auf einer Virtuellen Hardware aufgeführt wurde, wäre die Ausführung auf einem physikalischen 8051 eine weiterer nächster Schritt.
+		\item Generelle Performance und Zuverlässigkeitsverbesserungen
+	\end{itemize}
+	
+	
 \end{document}
 
 
